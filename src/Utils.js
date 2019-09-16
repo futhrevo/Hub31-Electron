@@ -1,0 +1,93 @@
+module.exports.secondsToHms = function(d) {
+  d = Number(d);
+  var h = Math.floor(d / 3600);
+  var m = Math.floor((d % 3600) / 60);
+  var s = Math.floor((d % 3600) % 60);
+
+  var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+  var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+  var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+  return hDisplay + mDisplay + sDisplay;
+};
+
+module.exports.replaceText = (selector, text) => {
+  const element = document.getElementById(selector);
+  if (element) element.innerText = text;
+};
+
+module.exports.getBasePath = function(source) {
+  let basepath = source.split("/");
+  if (basepath.length === 2) {
+    return "/";
+  }
+  basepath.pop();
+  return basepath.join("/");
+};
+
+/**
+ * Parse progress line from ffmpeg stderr
+ *
+ * @param {String} line progress line
+ * @return progress object
+ * @private
+ */
+module.exports.parseProgressLine = function(line) {
+  var progress = {};
+
+  // Remove all spaces after = and trim
+  line = line.replace(/=\s+/g, "=").trim();
+  var progressParts = line.split("\n");
+
+  // Split every progress part by "=" to get key and value
+  for (var i = 0; i < progressParts.length; i++) {
+    var progressSplit = progressParts[i].split("=", 2);
+    var key = progressSplit[0];
+    var value = progressSplit[1];
+
+    // This is not a progress line
+    if (typeof value === "undefined") return null;
+
+    progress[key] = value;
+  }
+
+  return progress;
+};
+
+module.exports.setMaxProgress = function(node, val) {
+  val = Number(val);
+  node.max = val;
+};
+
+module.exports.setProgress = function(statusNode, progressNode, data) {
+  const progress = exports.parseProgressLine(data);
+  statusNode.innerText = progress.progress;
+  // exports.replaceText(statusNode, progress.progress);
+  progressNode.value = progress.out_time_us / 1000000;
+};
+
+module.exports.clearDirectory = function(directory) {
+  const fs = require("fs");
+  const path = require("path");
+
+  const files = fs.readdirSync(directory);
+  if (files) {
+    for (const file of files) {
+      console.log(path.extname(file));
+      if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
+        console.log(file);
+        fs.unlinkSync(path.join(directory, file));
+      }
+    }
+  }
+};
+// check if file exists
+// https://codeforgeek.com/how-to-check-if-file-exists-node/
+
+// Upload entire directory tree to S3 using AWS sdk in node js
+// https://stackoverflow.com/questions/27670051/upload-entire-directory-tree-to-s3-using-aws-sdk-in-node-js
+
+// Photon components
+// http://photonkit.com/components/
+
+// electron-api-demos
+// https://github.com/electron/electron-api-demos/blob/master/main-process/native-ui/dialogs/open-file.js
