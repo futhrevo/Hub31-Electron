@@ -28,5 +28,15 @@ module.exports = {
     //   bitrate: "5000k" // refer to table @ https://docs.peer5.com/guides/production-ready-hls-vod/
     //   audio: '192k'
     // } // 1080p
-  ]
+  ],
+  initialProbe: {
+    width: "",
+    height: "",
+    fps: "",
+    duration: ""
+  },
+  initialConfig: {
+    user: "",
+    video: ""
+  }
 };

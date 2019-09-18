@@ -11,7 +11,7 @@
     <div class="window">
       <!-- Your app's content goes inside .window-content -->
       <div class="window-content">
-        <div class="padded-more">
+        <div class="padded-more w-100">
           <h2>HUB31 Uploader</h2>
           We are using Node.js <span id="node-version"></span>, Chromium
           <span id="chrome-version"></span>, and Electron
@@ -61,14 +61,25 @@
           <h4>3. Start</h4>
           STATUS: <span id="progress-status">Ready</span>
           <div>
-            <progress id="ffmpeg-progress" max="100" value="0"></progress>
+            <progress
+              class="w-100"
+              id="ffmpeg-progress"
+              max="100"
+              value="0"
+            ></progress>
           </div>
           <div>
             <button id="start-ffmpeg-button" class="btn btn-large btn-primary">
               START
             </button>
-            <button id="stop-ffmpeg-button" class="btn btn-large btn-primary">
+            <button id="stop-ffmpeg-button" class="btn btn-large btn-negative">
               STOP
+            </button>
+            <button id="upload-video-button" class="btn btn-large btn-primary">
+              UPLOAD
+            </button>
+            <button id="reset-button" class="btn btn-large btn-warning">
+              RESET
             </button>
           </div>
         </div>

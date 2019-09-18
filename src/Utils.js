@@ -68,26 +68,36 @@ module.exports.setProgress = function(statusNode, progressNode, data) {
 module.exports.clearDirectory = function(directory) {
   const fs = require("fs");
   const path = require("path");
-
-  const files = fs.readdirSync(directory);
-  if (files) {
-    for (const file of files) {
-      console.log(path.extname(file));
-      if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
-        console.log(file);
-        fs.unlinkSync(path.join(directory, file));
+  if (fs.existsSync(directory)) {
+    // check if file exists
+    const files = fs.readdirSync(directory);
+    if (files) {
+      for (const file of files) {
+        console.log(path.extname(file));
+        if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
+          console.log(file);
+          fs.unlinkSync(path.join(directory, file));
+        }
       }
     }
   }
 };
-// check if file exists
-// https://codeforgeek.com/how-to-check-if-file-exists-node/
 
-// Upload entire directory tree to S3 using AWS sdk in node js
-// https://stackoverflow.com/questions/27670051/upload-entire-directory-tree-to-s3-using-aws-sdk-in-node-js
+module.exports.getFilesCount = function(directory) {
+  const fs = require("fs");
+  const path = require("path");
+  let count = 0;
+  if (fs.existsSync(directory)) {
+    // check if file exists
+    const files = fs.readdirSync(directory);
 
-// Photon components
-// http://photonkit.com/components/
-
-// electron-api-demos
-// https://github.com/electron/electron-api-demos/blob/master/main-process/native-ui/dialogs/open-file.js
+    if (files) {
+      for (const file of files) {
+        if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
+          count++;
+        }
+      }
+    }
+  }
+  return count;
+};

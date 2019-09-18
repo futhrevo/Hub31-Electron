@@ -1,5 +1,5 @@
 {
-  "name": "electron-quick-start",
+  "name": "HUB31-UPLOADER",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
@@ -20,7 +20,7 @@
     "electron": "^6.0.7"
   },
   "dependencies": {
-    "aws-sdk": "^2.527.0",
+    "aws-sdk": "^2.529.0",
     "node-cmd": "^3.0.0"
   }
 }

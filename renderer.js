@@ -19,6 +19,8 @@ const startButton = document.getElementById("start-ffmpeg-button");
 const stopButton = document.getElementById("stop-ffmpeg-button");
 const statusMsg = document.getElementById("progress-status");
 const progressbar = document.getElementById("ffmpeg-progress");
+const resetButton = document.getElementById("reset-button");
+const uploadButton = document.getElementById("upload-video-button");
 
 ipcRenderer.on("selected-video-file", (event, path) => {
   if (path.length > 0) {
@@ -98,4 +100,46 @@ startButton.addEventListener("click", event => {
 stopButton.addEventListener("click", event => {
   console.log(processRef.pid);
   process.kill(processRef.pid, "SIGINT");
+});
+
+resetButton.addEventListener("click", event => {
+  // reset variables to initial values
+  filepath = "";
+  keyFrameInterval = -1;
+  user = "";
+  videoid = "";
+  totalduration = 0;
+  document.getElementById("selected-file").innerHTML = filepath;
+
+  // reset video probed data
+  const { initialConfig, initialProbe } = require("./src/Constants");
+  ["user", "video"].forEach(prop => {
+    Utils.replaceText(`config-${prop}`, initialConfig[prop]);
+  });
+
+  for (let prop in initialProbe) {
+    if (Object.prototype.hasOwnProperty.call(initialProbe, prop)) {
+      Utils.replaceText(`video-${prop}`, initialProbe[prop]);
+    }
+  }
+
+  // reset status message
+  statusMsg.innerText = "Ready";
+
+  // reset progressbar
+  progressbar.max = 100;
+  progressbar.value = 0;
+});
+
+uploadButton.addEventListener("click", event => {
+  console.log("upload video");
+  if (videoid.length < 5 || user.length < 5) {
+    return alert("Invalid video configuration");
+  }
+  const targetPath = `${Utils.getBasePath(filepath)}/${videoid}`;
+  const s3 = require("./src/S3Utils");
+
+  // reset status message
+  statusMsg.innerText = "Uploading...";
+  s3.uploadDir(targetPath, "hubacca", user, videoid);
 });
