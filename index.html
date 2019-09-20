@@ -16,10 +16,17 @@
           We are using Node.js <span id="node-version"></span>, Chromium
           <span id="chrome-version"></span>, and Electron
           <span id="electron-version"></span>.
-          <h4>1. Select Video file</h4>
-          <button id="select-video-file" class="btn btn-mini btn-default">
-            Browse
-          </button>
+          <h4>
+            1. Select Video file<span>
+              <button
+                id="select-video-file"
+                class="btn btn-mini btn-default pull-right"
+              >
+                Browse
+              </button>
+            </span>
+          </h4>
+
           <table class="table-striped">
             <tr>
               <th>PATH</th>
@@ -43,10 +50,17 @@
             </tr>
           </table>
 
-          <h4>2. Parse config</h4>
-          <button id="paste-config-btn" class="btn btn-mini btn-default">
-            Paste config
-          </button>
+          <h4>
+            2. Parse config<span
+              ><button
+                id="paste-config-btn"
+                class="btn btn-mini btn-default pull-right"
+              >
+                Paste config
+              </button></span
+            >
+          </h4>
+
           <table class="table-striped">
             <tr>
               <th>USER</th>
@@ -58,7 +72,25 @@
             </tr>
           </table>
 
-          <h4>3. Start</h4>
+          <h4>
+            3. Poster<span
+              ><button
+                id="poster-preview"
+                class="btn btn-mini btn-default pull-right"
+              >
+                Preview
+              </button></span
+            >
+          </h4>
+          <input
+            id="time-input"
+            type="time"
+            step="1"
+            value="00:00:01"
+            min="00:00:00"
+            max="01:00:00"
+          />
+          <h4>4. Start</h4>
           STATUS: <span id="progress-status">Ready</span>
           <div>
             <progress

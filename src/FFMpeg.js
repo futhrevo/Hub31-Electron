@@ -35,3 +35,13 @@ module.exports.getRenditionCmd = function(key_frames_interval, target) {
   });
   return { command, master_playlist };
 };
+
+module.exports.getThumbnailCmd = function(time, filepath, videoid) {
+  const Utils = require("./Utils");
+  const targetPath = `${Utils.getBasePath(filepath)}/${videoid}`;
+  if (time == null) {
+    time = "00:00:01";
+  }
+  const { posterSize } = require("./Constants.js");
+  return `ffmpeg -hide_banner -ss ${time} -i ${filepath} -y -s ${posterSize} -vframes 1 -f image2 ${targetPath}/${videoid}.png`;
+};

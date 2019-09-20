@@ -1,8 +1,11 @@
 module.exports = {
+  videobucket: "hubacca",
+  posterbucket: "hub31.com",
   misc_params: "-hide_banner -y -v 'quiet' -progress /dev/stdout",
   segment_target_duration: 4, // try to create a new segment every X seconds
   max_bitrate_ratio: 1.07, // maximum accepted bitrate fluctuations
   rate_monitor_buffer_ratio: 1.5, // maximum buffer size between bitrate conformance checks
+  posterSize: "854x480",
   renditions: [
     {
       width: 640, //WIDTH

@@ -1,7 +1,7 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, shell } = require("electron");
 var cmd = require("node-cmd");
 var FFProbe = require("./src/ProbeVideo");
 const Utils = require("./src/Utils");
@@ -21,6 +21,7 @@ const statusMsg = document.getElementById("progress-status");
 const progressbar = document.getElementById("ffmpeg-progress");
 const resetButton = document.getElementById("reset-button");
 const uploadButton = document.getElementById("upload-video-button");
+const previewButton = document.getElementById("poster-preview");
 
 ipcRenderer.on("selected-video-file", (event, path) => {
   if (path.length > 0) {
@@ -29,7 +30,6 @@ ipcRenderer.on("selected-video-file", (event, path) => {
       const probedData = FFProbe.parseProbe(data);
       totalduration = probedData.duration;
       Utils.setMaxProgress(progressbar, totalduration);
-      console.log(totalduration);
       probedData.duration = Utils.secondsToHms(probedData.duration);
       keyFrameInterval = FFProbe.getKeyFrameInterval(probedData.fps);
       for (let prop in probedData) {
@@ -86,14 +86,16 @@ startButton.addEventListener("click", event => {
   console.log(
     `Executing command:\nffmpeg ${misc_params} -i ${filepath} ${command}`
   );
-  processRef = cmd.get(`ffmpeg ${misc_params} -i ${filepath} ${command}`);
-  //listen to the python terminal output
-  processRef.stdout.on("data", function(data) {
-    Utils.setProgress(statusMsg, progressbar, data);
-  });
+  getPoster(poster => {
+    processRef = cmd.get(`ffmpeg ${misc_params} -i ${filepath} ${command}`);
+    //listen to the python terminal output
+    processRef.stdout.on("data", function(data) {
+      Utils.setProgress(statusMsg, progressbar, data);
+    });
 
-  processRef.stderr.on("data", function(data) {
-    console.log(data);
+    processRef.stderr.on("data", function(data) {
+      console.log(data);
+    });
   });
 });
 
@@ -139,7 +141,60 @@ uploadButton.addEventListener("click", event => {
   const targetPath = `${Utils.getBasePath(filepath)}/${videoid}`;
   const s3 = require("./src/S3Utils");
 
-  // reset status message
-  statusMsg.innerText = "Uploading...";
-  s3.uploadDir(targetPath, "hubacca", user, videoid);
+  const max = Utils.getFilesCount(targetPath);
+  const { videobucket, posterbucket } = require("./src/Constants");
+  setStatus("Preparing...", max, 0);
+  s3.uploadDir(
+    targetPath,
+    videobucket,
+    posterbucket,
+    user,
+    videoid,
+    max,
+    setStatus
+  );
 });
+
+previewButton.addEventListener("click", event => {
+  getPoster(targetFile => shell.openExternal(`file://${targetFile}`));
+});
+
+function setStatus(msg, max, val) {
+  // reset status message
+  statusMsg.innerText = msg;
+
+  // reset progressbar
+  progressbar.max = max;
+  progressbar.value = val;
+}
+
+function getPoster(callback) {
+  let time = document.getElementById("time-input").value;
+  if (time === "") {
+    time = "00:00:01";
+  }
+  if (videoid.length < 5) {
+    return alert("Invalid video configuration");
+  }
+  if (filepath === "") {
+    return alert("Invalid file path");
+  }
+  const targetPath = `${Utils.getBasePath(filepath)}/${videoid}`;
+  cmd.run(`mkdir -p ${targetPath}`);
+
+  const FFMpeg = require("./src/FFMpeg");
+  cmd.get(FFMpeg.getThumbnailCmd(time, filepath, videoid), function(
+    err,
+    data,
+    stderr
+  ) {
+    if (err) {
+      alert("Unable to create poster");
+    } else {
+      const targetFile = `${Utils.getBasePath(
+        filepath
+      )}/${videoid}/${videoid}.png`;
+      if (callback) callback(targetFile);
+    }
+  });
+}

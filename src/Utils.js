@@ -73,9 +73,7 @@ module.exports.clearDirectory = function(directory) {
     const files = fs.readdirSync(directory);
     if (files) {
       for (const file of files) {
-        console.log(path.extname(file));
         if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
-          console.log(file);
           fs.unlinkSync(path.join(directory, file));
         }
       }

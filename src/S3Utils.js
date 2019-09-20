@@ -3,15 +3,6 @@ const S3 = require("aws-sdk/clients/s3");
 const fs = require("fs");
 const path = require("path");
 
-// Set credentials and Region
-let s3 = new S3({
-  apiVersion: "2006-03-01",
-  credentials: {
-    accessKeyId: "AKIAZULH5XIJKLRXNDW2",
-    secretAccessKey: "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"
-  }
-});
-
 function walkSync(currentDirPath, callback) {
   fs.readdirSync(currentDirPath).forEach(function(name) {
     if ([".ts", ".m3u8"].indexOf(path.extname(name)) > -1) {
@@ -24,26 +15,104 @@ function walkSync(currentDirPath, callback) {
   });
 }
 
-module.exports.uploadDir = function(s3Path, bucketName, user, video) {
-  console.log("uplod Dir started");
+// https://aws.amazon.com/blogs/security/writing-iam-policies-grant-access-to-user-specific-folders-in-an-amazon-s3-bucket/
+module.exports.uploadDir = async function(
+  s3Path,
+  videobucket,
+  posterbucket,
+  user,
+  video,
+  max,
+  setStatus
+) {
+  let progress = 0;
+  let errors = 0;
 
-  walkSync(s3Path, function(filePath, stat) {
-    let bucketPath = `${user}/${video}/${filePath.substring(
-      s3Path.length + 1
-    )}`;
+  const accessKeyId = atob(localStorage.getItem("key1"));
+  const secretAccessKey = atob(localStorage.getItem("key2"));
+  const prefix = `${user}/${video}`;
+
+  // Set credentials and Region
+  let s3 = new S3({
+    apiVersion: "2006-03-01",
+    credentials: {
+      accessKeyId,
+      secretAccessKey
+    }
+  });
+  const listParams = {
+    Bucket: videobucket,
+    Prefix: prefix
+  };
+  await emptyS3Directory(s3, listParams);
+  setStatus("Uploading...", max, 0);
+  uploadPoster(s3, posterbucket, s3Path, user, video);
+  // walkSync(s3Path, function(filePath, stat) {
+  //   let bucketPath = `${prefix}/${filePath.substring(s3Path.length + 1)}`;
+  //   let params = {
+  //     Bucket: videobucket,
+  //     Key: bucketPath,
+  //     Body: fs.readFileSync(filePath)
+  //   };
+  //   s3.putObject(params, function(err, data) {
+  //     if (err) {
+  //       errors++;
+  //       console.log(err.message);
+  //     } else {
+  //       console.log(
+  //         "Successfully uploaded " + bucketPath + " to " + videobucket
+  //       );
+  //     }
+  //     if (++progress === max) {
+  //       setStatus(`Uploading done with ${errors} errors`, max, progress);
+  //     } else {
+  //       setStatus(`Uploading ${max - progress} items...`, max, progress);
+  //     }
+  //   });
+  // });
+};
+
+// https://stackoverflow.com/a/48955582/3739896
+async function emptyS3Directory(s3, listParams) {
+  const listedObjects = await s3.listObjectsV2(listParams).promise();
+
+  if (listedObjects.Contents.length === 0) return;
+
+  const deleteParams = {
+    Bucket: listParams.Bucket,
+    Delete: { Objects: [] }
+  };
+
+  listedObjects.Contents.forEach(({ Key }) => {
+    deleteParams.Delete.Objects.push({ Key });
+  });
+
+  await s3.deleteObjects(deleteParams).promise();
+
+  if (listedObjects.IsTruncated) await emptyS3Directory(s3, listParams);
+}
+
+function uploadPoster(s3, bucketName, filepath, user, video) {
+  const imagefile = `${filepath}/${videoid}.png`;
+
+  // Check that the file exists locally
+  if (!fs.existsSync(imagefile)) {
+    alert("Poster not found");
+  } else {
+    let fileData = fs.readFileSync(imagefile);
+    let bucketPath = `poster/${user}/${video}.png`;
     let params = {
       Bucket: bucketName,
       Key: bucketPath,
-      Body: fs.readFileSync(filePath)
+      Body: fileData
     };
+    console.log(params);
     s3.putObject(params, function(err, data) {
       if (err) {
-        console.log(err.message);
+        console.log(err);
       } else {
-        console.log(
-          "Successfully uploaded " + bucketPath + " to " + bucketName
-        );
+        console.log("Uploaded poster");
       }
     });
-  });
-};
+  }
+}
