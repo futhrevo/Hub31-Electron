@@ -1,3 +1,20 @@
+body {
+  color: #4e4e4e;
+}
+
+h2 {
+  text-shadow: 1px 1px 1px #ffffff91;
+  letter-spacing: 2px;
+}
 .w-100 {
   width: 100%;
+}
+
+.window {
+  background: linear-gradient(to right, #b9acf3, #a8c0ff);
+}
+
+.btn-large:hover {
+  box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+    0 17px 50px 0 rgba(0, 0, 0, 0.19);
 }
