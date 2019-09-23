@@ -47,29 +47,29 @@ module.exports.uploadDir = async function(
   await emptyS3Directory(s3, listParams);
   setStatus("Uploading...", max, 0);
   uploadPoster(s3, posterbucket, s3Path, user, video);
-  // walkSync(s3Path, function(filePath, stat) {
-  //   let bucketPath = `${prefix}/${filePath.substring(s3Path.length + 1)}`;
-  //   let params = {
-  //     Bucket: videobucket,
-  //     Key: bucketPath,
-  //     Body: fs.readFileSync(filePath)
-  //   };
-  //   s3.putObject(params, function(err, data) {
-  //     if (err) {
-  //       errors++;
-  //       console.log(err.message);
-  //     } else {
-  //       console.log(
-  //         "Successfully uploaded " + bucketPath + " to " + videobucket
-  //       );
-  //     }
-  //     if (++progress === max) {
-  //       setStatus(`Uploading done with ${errors} errors`, max, progress);
-  //     } else {
-  //       setStatus(`Uploading ${max - progress} items...`, max, progress);
-  //     }
-  //   });
-  // });
+  walkSync(s3Path, function(filePath, stat) {
+    let bucketPath = `${prefix}/${filePath.substring(s3Path.length + 1)}`;
+    let params = {
+      Bucket: videobucket,
+      Key: bucketPath,
+      Body: fs.readFileSync(filePath)
+    };
+    s3.putObject(params, function(err, data) {
+      if (err) {
+        errors++;
+        console.log(err.message);
+      } else {
+        console.log(
+          "Successfully uploaded " + bucketPath + " to " + videobucket
+        );
+      }
+      if (++progress === max) {
+        setStatus(`Uploading done with ${errors} errors`, max, progress);
+      } else {
+        setStatus(`Uploading ${max - progress} items...`, max, progress);
+      }
+    });
+  });
 };
 
 // https://stackoverflow.com/a/48955582/3739896
@@ -106,7 +106,6 @@ function uploadPoster(s3, bucketName, filepath, user, video) {
       Key: bucketPath,
       Body: fileData
     };
-    console.log(params);
     s3.putObject(params, function(err, data) {
       if (err) {
         console.log(err);
