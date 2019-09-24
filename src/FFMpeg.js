@@ -27,10 +27,10 @@ module.exports.getRenditionCmd = function(key_frames_interval, target) {
     const bufsize = `${parseInt(bitrate) * rate_monitor_buffer_ratio}k`;
     const bandwidth = parseInt(bitrate) * 1000;
     const name = `${height}p`;
-    const targetname = path.join(target, name);
+    const targetname = path.join(target, name); // .replace(/ /g, '%20');
     command += ` ${static_params} -vf scale=w=-2:h=${height}`;
     command += ` -b:v ${bitrate} -maxrate ${maxrate} -bufsize ${bufsize} -b:a ${audio}`;
-    command += ` -hls_segment_filename ${targetname}_%03d.ts ${targetname}.m3u8`;
+    command += ` -hls_segment_filename "${targetname}_%03d.ts" "${targetname}.m3u8"`;
 
     // add rendition entry in the master playlist
     master_playlist += `#EXT-X-STREAM-INF:BANDWIDTH=${bandwidth},RESOLUTION=${width}x${height}\n${name}.m3u8\n`;

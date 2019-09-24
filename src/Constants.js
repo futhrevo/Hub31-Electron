@@ -1,7 +1,7 @@
 module.exports = {
   videobucket: "hubacca",
   posterbucket: "hub31.com",
-  misc_params: '-hide_banner -y -v "quiet" -progress /dev/stdout',
+  misc_params: '-hide_banner -y -v "quiet" -progress pipe:1',
   segment_target_duration: 4, // try to create a new segment every X seconds
   max_bitrate_ratio: 1.07, // maximum accepted bitrate fluctuations
   rate_monitor_buffer_ratio: 1.5, // maximum buffer size between bitrate conformance checks
