@@ -72,22 +72,19 @@ startButton.addEventListener("click", event => {
   if (videoid.length < 5 || user.length < 5) {
     return alert("Invalid video configuration");
   }
-  const targetPath = `${Utils.getBasePath(filepath)}/${videoid}`;
+  const targetPath = Utils.getTargetPath(filepath, videoid);
   Utils.clearDirectory(targetPath);
   const { command, master_playlist } = FFMpeg.getRenditionCmd(
     keyFrameInterval,
     targetPath
   );
   const { misc_params } = require("./src/Constants");
-  cmd.run(
-    `mkdir -p ${targetPath}
-    echo "${master_playlist}" | tee ${targetPath}/playlist.m3u8`
-  );
+  Utils.writePlaylist(targetPath, master_playlist);
   console.log(
-    `Executing command:\nffmpeg ${misc_params} -i ${filepath} ${command}`
+    `Executing command:\nffmpeg ${misc_params} -i "${filepath}" ${command}`
   );
   getPoster(poster => {
-    processRef = cmd.get(`ffmpeg ${misc_params} -i ${filepath} ${command}`);
+    processRef = cmd.get(`ffmpeg ${misc_params} -i "${filepath}" ${command}`);
     //listen to the python terminal output
     processRef.stdout.on("data", function(data) {
       Utils.setProgress(statusMsg, progressbar, data);
@@ -138,7 +135,7 @@ uploadButton.addEventListener("click", event => {
   if (videoid.length < 5 || user.length < 5) {
     return alert("Invalid video configuration");
   }
-  const targetPath = `${Utils.getBasePath(filepath)}/${videoid}`;
+  const targetPath = Utils.getTargetPath(filepath, videoid);
   const s3 = require("./src/S3Utils");
 
   const max = Utils.getFilesCount(targetPath);
@@ -179,8 +176,9 @@ function getPoster(callback) {
   if (filepath === "") {
     return alert("Invalid file path");
   }
-  const targetPath = `${Utils.getBasePath(filepath)}/${videoid}`;
-  cmd.run(`mkdir -p ${targetPath}`);
+  const targetPath = Utils.getTargetPath(filepath, videoid);
+  console.log(targetPath);
+  cmd.run(`mkdir -p "${targetPath}"`);
 
   const FFMpeg = require("./src/FFMpeg");
   cmd.get(FFMpeg.getThumbnailCmd(time, filepath, videoid), function(
@@ -191,9 +189,7 @@ function getPoster(callback) {
     if (err) {
       alert("Unable to create poster");
     } else {
-      const targetFile = `${Utils.getBasePath(
-        filepath
-      )}/${videoid}/${videoid}.png`;
+      const targetFile = Utils.getTargetPng(filepath, videoid);
       if (callback) callback(targetFile);
     }
   });
