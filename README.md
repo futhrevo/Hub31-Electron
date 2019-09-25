@@ -13,3 +13,5 @@ https://github.com/electron/electron-api-demos/blob/master/main-process/native-u
 
 Writing IAM Policies: Grant Access to User-Specific Folders in an Amazon S3 Bucket
 https://aws.amazon.com/blogs/security/writing-iam-policies-grant-access-to-user-specific-folders-in-an-amazon-s3-bucket/
+
+https://docs.peer5.com/guides/production-ready-hls-vod/
