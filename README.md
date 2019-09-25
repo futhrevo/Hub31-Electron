@@ -15,3 +15,4 @@ Writing IAM Policies: Grant Access to User-Specific Folders in an Amazon S3 Buck
 https://aws.amazon.com/blogs/security/writing-iam-policies-grant-access-to-user-specific-folders-in-an-amazon-s3-bucket/
 
 https://docs.peer5.com/guides/production-ready-hls-vod/
+{ "user": "dF7gzMoWr3dPX6YPq", "video": "BpGT888dqRHxZLD8m"}

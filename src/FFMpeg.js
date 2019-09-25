@@ -19,6 +19,7 @@ module.exports.getRenditionCmd = function(key_frames_interval, target) {
   } = require("./Constants");
   let master_playlist = "#EXTM3U\n#EXT-X-VERSION:3\n";
   let command = "";
+  const path = require("path");
   renditions.forEach(rendition => {
     console.log(rendition);
     const { width, height, audio, bitrate } = rendition;
@@ -26,9 +27,10 @@ module.exports.getRenditionCmd = function(key_frames_interval, target) {
     const bufsize = `${parseInt(bitrate) * rate_monitor_buffer_ratio}k`;
     const bandwidth = parseInt(bitrate) * 1000;
     const name = `${height}p`;
+    const targetname = path.join(target, name); // .replace(/ /g, '%20');
     command += ` ${static_params} -vf scale=w=-2:h=${height}`;
     command += ` -b:v ${bitrate} -maxrate ${maxrate} -bufsize ${bufsize} -b:a ${audio}`;
-    command += ` -hls_segment_filename ${target}/${name}_%03d.ts ${target}/${name}.m3u8`;
+    command += ` -hls_segment_filename "${targetname}_%03d.ts" "${targetname}.m3u8"`;
 
     // add rendition entry in the master playlist
     master_playlist += `#EXT-X-STREAM-INF:BANDWIDTH=${bandwidth},RESOLUTION=${width}x${height}\n${name}.m3u8\n`;
@@ -38,10 +40,10 @@ module.exports.getRenditionCmd = function(key_frames_interval, target) {
 
 module.exports.getThumbnailCmd = function(time, filepath, videoid) {
   const Utils = require("./Utils");
-  const targetPath = `${Utils.getBasePath(filepath)}/${videoid}`;
+  const targetFile = Utils.getTargetPng(filepath, videoid);
   if (time == null) {
     time = "00:00:01";
   }
   const { posterSize } = require("./Constants.js");
-  return `ffmpeg -hide_banner -ss ${time} -i ${filepath} -y -s ${posterSize} -vframes 1 -f image2 ${targetPath}/${videoid}.png`;
+  return `ffmpeg -hide_banner -ss ${time} -i "${filepath}" -y -s ${posterSize} -vframes 1 -f image2 "${targetFile}"`;
 };
