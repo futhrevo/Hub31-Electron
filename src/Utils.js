@@ -1,4 +1,4 @@
-const secondsToHms = function (d) {
+const secondsToHms = function(d) {
   d = Number(d);
   var h = Math.floor(d / 3600);
   var m = Math.floor((d % 3600) / 60);
@@ -15,20 +15,20 @@ const replaceText = (selector, text) => {
   if (element) element.innerText = text;
 };
 
-const getBasePath = function (source) {
+const getBasePath = function(source) {
   const path = require("path");
   return path.dirname(source);
 };
 
-const getTargetPath = function (source, video) {
+const getTargetPath = function(source, video) {
   const path = require("path");
   return path.join(getBasePath(source), videoid);
-}
+};
 
-const getTargetPng = function (source, video) {
+const getTargetPng = function(source, video) {
   const path = require("path");
   return path.join(getTargetPath(source, video), `${video}.png`);
-}
+};
 /**
  * Parse progress line from ffmpeg stderr
  *
@@ -36,7 +36,7 @@ const getTargetPng = function (source, video) {
  * @return progress object
  * @private
  */
-const parseProgressLine = function (line) {
+const parseProgressLine = function(line) {
   var progress = {};
 
   // Remove all spaces after = and trim
@@ -58,19 +58,19 @@ const parseProgressLine = function (line) {
   return progress;
 };
 
-const setMaxProgress = function (node, val) {
+const setMaxProgress = function(node, val) {
   val = Number(val);
   node.max = val;
 };
 
-const setProgress = function (statusNode, progressNode, data) {
+const setProgress = function(statusNode, progressNode, data) {
   const progress = parseProgressLine(data);
   statusNode.innerText = progress.progress;
   // exports.replaceText(statusNode, progress.progress);
   progressNode.value = progress.out_time_us / 1000000;
 };
 
-const clearDirectory = function (directory) {
+const clearDirectory = function(directory) {
   const fs = require("fs");
   const path = require("path");
   if (fs.existsSync(directory)) {
@@ -86,7 +86,7 @@ const clearDirectory = function (directory) {
   }
 };
 
-const getFilesCount = function (directory) {
+const getFilesCount = function(directory) {
   const fs = require("fs");
   const path = require("path");
   let count = 0;
@@ -105,19 +105,36 @@ const getFilesCount = function (directory) {
   return count;
 };
 
-const writePlaylist = function (filepath, playlist) {
-  const fs = require('fs');
+const writePlaylist = function(filepath, playlist) {
+  const fs = require("fs");
   const path = require("path");
-  if (!fs.existsSync(filepath)){
+  if (!fs.existsSync(filepath)) {
     fs.mkdirSync(filepath);
   }
   let targetfile = path.join(filepath, "playlist.m3u8");
   console.log(targetfile);
 
-  fs.writeFile(targetfile, playlist, (err) => {
-    // In case of a error throw err. 
+  fs.writeFile(targetfile, playlist, err => {
+    // In case of a error throw err.
     if (err) throw err;
-  })
+  });
+};
 
-}
-module.exports = { secondsToHms, replaceText, getBasePath, getTargetPath, getTargetPng, parseProgressLine, setProgress, setMaxProgress, clearDirectory, getFilesCount, writePlaylist };
+const getKeyUrl = function(video) {
+  const { rooturl } = require("./Constants");
+  return `${rooturl}/?video=${video}`;
+};
+module.exports = {
+  secondsToHms,
+  replaceText,
+  getBasePath,
+  getTargetPath,
+  getTargetPng,
+  parseProgressLine,
+  setProgress,
+  setMaxProgress,
+  clearDirectory,
+  getFilesCount,
+  writePlaylist,
+  getKeyUrl
+};

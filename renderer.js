@@ -10,6 +10,7 @@ let filepath = "";
 let keyFrameInterval = -1;
 let user = "";
 let videoid = "";
+let hash = "";
 let processRef;
 let totalduration = 0;
 
@@ -52,11 +53,13 @@ pasteConfigBtn.addEventListener("click", event => {
     const payload = JSON.parse(clipboard.readText());
     if (
       Object.prototype.hasOwnProperty.call(payload, "user") &&
-      Object.prototype.hasOwnProperty.call(payload, "video")
+      Object.prototype.hasOwnProperty.call(payload, "video") &&
+      Object.prototype.hasOwnProperty.call(payload, "hash")
     ) {
       user = payload.user;
       videoid = payload.video;
-      ["user", "video"].forEach(prop => {
+      hash = payload.hash;
+      ["user", "video", "hash"].forEach(prop => {
         Utils.replaceText(`config-${prop}`, payload[prop]);
       });
     }
@@ -69,14 +72,21 @@ startButton.addEventListener("click", event => {
   }
   console.log(keyFrameInterval);
   const FFMpeg = require("./src/FFMpeg");
-  if (videoid.length < 5 || user.length < 5) {
+  if (videoid.length < 5 || user.length < 5 || hash === "undefined") {
     return alert("Invalid video configuration");
   }
   const targetPath = Utils.getTargetPath(filepath, videoid);
   Utils.clearDirectory(targetPath);
+  const secureRandom = require("secure-random");
+  const iv = secureRandom(16, { type: "Buffer" }).toString("hex");
+  const getKeyUrl = require("./src/Utils").getKeyUrl;
+  const keyUrl = getKeyUrl(videoid);
   const { command, master_playlist } = FFMpeg.getRenditionCmd(
     keyFrameInterval,
-    targetPath
+    targetPath,
+    hash,
+    iv,
+    keyUrl
   );
   const { misc_params } = require("./src/Constants");
   Utils.writePlaylist(targetPath, master_playlist);

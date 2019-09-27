@@ -1,4 +1,5 @@
 module.exports = {
+  rooturl: "https://hub31.com/sentry",
   videobucket: "hubacca",
   posterbucket: "hub31.com",
   misc_params: '-hide_banner -y -v "quiet" -progress pipe:1',

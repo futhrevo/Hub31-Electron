@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.529.0",
-    "node-cmd": "^3.0.0"
+    "node-cmd": "^3.0.0",
+    "secure-random": "^1.1.2"
   }
 }
