@@ -26,8 +26,11 @@ module.exports = function(win) {
           click: _ => {
             let prefWindow = new BrowserWindow({
               width: 500,
-              height: 300,
-              resizable: false
+              height: 400,
+              resizable: true,
+              webPreferences: {
+                nodeIntegration: true
+              }
             });
             prefWindow.loadFile("static/preferences.html");
             // Open the DevTools.

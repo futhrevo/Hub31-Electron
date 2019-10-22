@@ -120,9 +120,9 @@ const writePlaylist = function(filepath, playlist) {
   });
 };
 
-const getKeyUrl = function(video) {
+const getKeyUrl = function() {
   const { rooturl } = require("./Constants");
-  return `${rooturl}/?video=${video}`;
+  return `${rooturl}`;
 };
 module.exports = {
   secondsToHms,

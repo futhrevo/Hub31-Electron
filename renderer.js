@@ -78,14 +78,12 @@ startButton.addEventListener("click", event => {
   const targetPath = Utils.getTargetPath(filepath, videoid);
   Utils.clearDirectory(targetPath);
   const secureRandom = require("secure-random");
-  const iv = secureRandom(16, { type: "Buffer" }).toString("hex");
   const getKeyUrl = require("./src/Utils").getKeyUrl;
-  const keyUrl = getKeyUrl(videoid);
+  const keyUrl = getKeyUrl();
   const { command, master_playlist } = FFMpeg.getRenditionCmd(
     keyFrameInterval,
     targetPath,
     hash,
-    iv,
     keyUrl
   );
   const { misc_params } = require("./src/Constants");

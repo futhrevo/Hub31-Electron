@@ -8,9 +8,17 @@
   </head>
   <body>
     <div class="window">
-      <div class="window-content">
+      <div class="tab-group">
+        <div class="tab-item active" onclick="showTab(event, 'paths')">
+            <span class="icon icon-tools">&nbsp;&nbsp;Paths</span>
+          </div>
+        <div class="tab-item" onclick="showTab(event, 'keys')">
+            <span class="icon icon-key">&nbsp;&nbsp;Keys</span>
+          </div>
+      </div>
+      <div id="keys" class="window-content" style="display: none;">
         <div class="padded-more w-100">
-          <p>Provide two keys given by your administrator</p>
+          <h6>Provide two keys given by your administrator</h6>
           <form>
             <div class="form-group">
               <label>Key1</label>
@@ -42,6 +50,43 @@
             </div>
           </form>
           <dfn id="msg-pref" />
+        </div>
+      </div>
+      <div id="paths" class="window-content">
+        <div class="padded-more w-100">
+          <h6>Provide Path for Bento4 and FFmpeg</h6>
+          <form>
+            <div class="form-group">
+              <label>FFmpeg Bin Path</label>
+              <input
+                id="ffmpeg-path"
+                type="text"
+                class="form-control"
+                placeholder="FFmpeg bin folder Location"
+              />
+              <small>Download from <a id="ffmpeg-url" href="https://www.ffmpeg.org/download.html" target="_blank">here</a> and extract</small>
+            </div>
+            <div class="form-group">
+              <label>Bento4 Bin Path</label>
+              <input
+                id="bento4-path"
+                type="text"
+                class="form-control"
+                placeholder="Bento4 bin folder Location"
+              />
+              <small>Download from <a id="bento4-url" href="https://www.bento4.com/downloads/" target="_blank">here</a> and extract</small>
+            </div>
+            <div class="form-actions">
+              <button
+                id="submit-paths"
+                class="btn btn-form btn-primary"
+                type="button"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+          <dfn id="msg-paths" />
         </div>
       </div>
       <script src="../src/preferences.js"></script>

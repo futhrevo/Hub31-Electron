@@ -1,5 +1,6 @@
 module.exports = {
-  rooturl: "https://hub31.com/sentry",
+  rooturl: "https://hub31.com/sentry.key",
+  apikey: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   videobucket: "hubacca",
   posterbucket: "hub31.com",
   misc_params: '-hide_banner -y -v "quiet" -progress pipe:1',
