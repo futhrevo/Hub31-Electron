@@ -5,12 +5,14 @@ const path = require("path");
 
 function walkSync(currentDirPath, callback) {
   fs.readdirSync(currentDirPath).forEach(function(name) {
-    if ([".ts", ".m3u8"].indexOf(path.extname(name)) > -1) {
-      const filePath = path.join(currentDirPath, name);
-      const stat = fs.statSync(filePath);
-      if (stat.isFile()) {
+    const filePath = path.join(currentDirPath, name);
+    const stat = fs.statSync(filePath);
+    if (stat.isFile()) {
+      if ([".ts", ".m3u8"].indexOf(path.extname(name)) > -1) {
         callback(filePath, stat);
       }
+    } else if (stat.isDirectory()) {
+      walkSync(filePath, callback);
     }
   });
 }
@@ -93,8 +95,8 @@ async function emptyS3Directory(s3, listParams) {
 }
 
 function uploadPoster(s3, bucketName, filepath, user, video) {
-  const imagefile = `${filepath}/${videoid}.png`;
-
+  const imagefile = path.join(filepath, `${video}.png`);
+  console.log(imagefile);
   // Check that the file exists locally
   if (!fs.existsSync(imagefile)) {
     alert("Poster not found");

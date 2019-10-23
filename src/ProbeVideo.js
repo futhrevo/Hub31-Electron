@@ -1,5 +1,7 @@
 module.exports.getFFprobeCmd = function(filepath) {
-  return `ffprobe -hide_banner -v quiet -print_format json -show_format -show_streams -select_streams v -i "${filepath}"`;
+  const FFBento4 = require("./FFBento4");
+  const ffprobe = FFBento4.getFFmpegCmd("ffprobe");
+  return `${ffprobe} -hide_banner -v quiet -print_format json -show_format -show_streams -select_streams v -i "${filepath}"`;
 };
 
 module.exports.parseProbe = function(stringdata) {

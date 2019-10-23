@@ -7,14 +7,14 @@ module.exports = {
   segment_target_duration: 4, // try to create a new segment every X seconds
   max_bitrate_ratio: 1.07, // maximum accepted bitrate fluctuations
   rate_monitor_buffer_ratio: 1.5, // maximum buffer size between bitrate conformance checks
-  posterSize: "854x480",
+  posterSize: "1920x1080",
   renditions: [
-    {
-      width: 640, //WIDTH
-      height: 360, // height
-      bitrate: "800k", // refer to table @ https://docs.peer5.com/guides/production-ready-hls-vod/
-      audio: "96k"
-    }, // 360p
+    // {
+    //   width: 640, //WIDTH
+    //   height: 360, // height
+    //   bitrate: "800k", // refer to table @ https://docs.peer5.com/guides/production-ready-hls-vod/
+    //   audio: "96k"
+    // }, // 360p
     {
       width: 854, //WIDTH
       height: 480, // height
@@ -26,13 +26,13 @@ module.exports = {
       height: 720, // height
       bitrate: "2800k", // refer to table @ https://docs.peer5.com/guides/production-ready-hls-vod/
       audio: "128k"
-    } //720p
-    // {
-    //   width: 1920, //WIDTH
-    //   height: 1080, // height
-    //   bitrate: "5000k" // refer to table @ https://docs.peer5.com/guides/production-ready-hls-vod/
-    //   audio: '192k'
-    // } // 1080p
+    }, //720p
+    {
+      width: 1920, //WIDTH
+      height: 1080, // height
+      bitrate: "5000k", // refer to table @ https://docs.peer5.com/guides/production-ready-hls-vod/
+      audio: "192k"
+    } // 1080p
   ],
   initialProbe: {
     width: "",

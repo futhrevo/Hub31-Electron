@@ -1,3 +1,5 @@
+const path = require("path");
+
 const secondsToHms = function(d) {
   d = Number(d);
   var h = Math.floor(d / 3600);
@@ -16,18 +18,20 @@ const replaceText = (selector, text) => {
 };
 
 const getBasePath = function(source) {
-  const path = require("path");
   return path.dirname(source);
 };
 
 const getTargetPath = function(source, video) {
-  const path = require("path");
   return path.join(getBasePath(source), videoid);
 };
 
+const getExportPath = function(source, video) {
+  return path.join(getBasePath(source), videoid, "export");
+};
+
 const getTargetPng = function(source, video) {
-  const path = require("path");
-  return path.join(getTargetPath(source, video), `${video}.png`);
+  const newpath = path.join(getTargetPath(source, video), "export");
+  return path.join(newpath, `${video}.png`);
 };
 /**
  * Parse progress line from ffmpeg stderr
@@ -63,24 +67,37 @@ const setMaxProgress = function(node, val) {
   node.max = val;
 };
 
-const setProgress = function(statusNode, progressNode, data) {
+const setProgress = function(statusNode, progressNode, data, cb, command) {
   const progress = parseProgressLine(data);
   statusNode.innerText = progress.progress;
   // exports.replaceText(statusNode, progress.progress);
   progressNode.value = progress.out_time_us / 1000000;
+  if (progress.progress === "end") {
+    if (progressNode.max === progressNode.value)
+      console.log("ended conversion");
+    cb(command);
+  }
 };
 
 const clearDirectory = function(directory) {
   const fs = require("fs");
-  const path = require("path");
   if (fs.existsSync(directory)) {
     // check if file exists
     const files = fs.readdirSync(directory);
     if (files) {
       for (const file of files) {
-        if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
-          fs.unlinkSync(path.join(directory, file));
+        const curPath = path.join(directory, file);
+
+        if (fs.lstatSync(curPath).isDirectory()) {
+          // recurse
+          clearDirectory(curPath);
+        } else {
+          // delete file
+          fs.unlinkSync(curPath);
         }
+        // if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
+        //   fs.unlinkSync(path.join(directory, file));
+        // }
       }
     }
   }
@@ -88,7 +105,6 @@ const clearDirectory = function(directory) {
 
 const getFilesCount = function(directory) {
   const fs = require("fs");
-  const path = require("path");
   let count = 0;
   if (fs.existsSync(directory)) {
     // check if file exists
@@ -98,6 +114,11 @@ const getFilesCount = function(directory) {
       for (const file of files) {
         if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
           count++;
+        } else {
+          const curPath = path.join(directory, file);
+          if (fs.lstatSync(curPath).isDirectory()) {
+            count += getFilesCount(curPath);
+          }
         }
       }
     }
@@ -107,7 +128,6 @@ const getFilesCount = function(directory) {
 
 const writePlaylist = function(filepath, playlist) {
   const fs = require("fs");
-  const path = require("path");
   if (!fs.existsSync(filepath)) {
     fs.mkdirSync(filepath);
   }
@@ -120,6 +140,13 @@ const writePlaylist = function(filepath, playlist) {
   });
 };
 
+const createPathSync = function(filepath) {
+  const fs = require("fs");
+  const targetpath = path.join(filepath, "export");
+  if (!fs.existsSync(targetpath)) {
+    fs.mkdirSync(targetpath);
+  }
+};
 const getKeyUrl = function() {
   const { rooturl } = require("./Constants");
   return `${rooturl}`;
@@ -129,6 +156,7 @@ module.exports = {
   replaceText,
   getBasePath,
   getTargetPath,
+  getExportPath,
   getTargetPng,
   parseProgressLine,
   setProgress,
@@ -136,5 +164,6 @@ module.exports = {
   clearDirectory,
   getFilesCount,
   writePlaylist,
+  createPathSync,
   getKeyUrl
 };

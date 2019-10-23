@@ -71,7 +71,7 @@ startButton.addEventListener("click", event => {
     return alert("Video not found");
   }
   console.log(keyFrameInterval);
-  const FFMpeg = require("./src/FFMpeg");
+  const FFBento4 = require("./src/FFBento4");
   if (videoid.length < 5 || user.length < 5 || hash === "undefined") {
     return alert("Invalid video configuration");
   }
@@ -80,22 +80,21 @@ startButton.addEventListener("click", event => {
   const secureRandom = require("secure-random");
   const getKeyUrl = require("./src/Utils").getKeyUrl;
   const keyUrl = getKeyUrl();
-  const { command, master_playlist } = FFMpeg.getRenditionCmd(
-    keyFrameInterval,
-    targetPath,
-    hash,
-    keyUrl
-  );
+  const { command } = FFBento4.getRenditionCmd(keyFrameInterval, targetPath);
   const { misc_params } = require("./src/Constants");
-  Utils.writePlaylist(targetPath, master_playlist);
+  const ffmpeg = FFBento4.getFFmpegCmd("ffmpeg");
+  const hlscmd = FFBento4.generateHLS(targetPath, hash, keyUrl);
+  Utils.createPathSync(targetPath);
   console.log(
-    `Executing command:\nffmpeg ${misc_params} -i "${filepath}" ${command}`
+    `Executing command:\n${ffmpeg} ${misc_params} -i "${filepath}" ${command}`
   );
   getPoster(poster => {
-    processRef = cmd.get(`ffmpeg ${misc_params} -i "${filepath}" ${command}`);
+    processRef = cmd.get(
+      `${ffmpeg} ${misc_params} -i "${filepath}" ${command}`
+    );
     //listen to the python terminal output
     processRef.stdout.on("data", function(data) {
-      Utils.setProgress(statusMsg, progressbar, data);
+      Utils.setProgress(statusMsg, progressbar, data, generateplaylist, hlscmd);
     });
 
     processRef.stderr.on("data", function(data) {
@@ -143,14 +142,15 @@ uploadButton.addEventListener("click", event => {
   if (videoid.length < 5 || user.length < 5) {
     return alert("Invalid video configuration");
   }
-  const targetPath = Utils.getTargetPath(filepath, videoid);
+  const exportPath = Utils.getExportPath(filepath, videoid);
   const s3 = require("./src/S3Utils");
 
-  const max = Utils.getFilesCount(targetPath);
+  const max = Utils.getFilesCount(exportPath);
+  console.log("max: ", max);
   const { videobucket, posterbucket } = require("./src/Constants");
   setStatus("Preparing...", max, 0);
   s3.uploadDir(
-    targetPath,
+    exportPath,
     videobucket,
     posterbucket,
     user,
@@ -185,11 +185,11 @@ function getPoster(callback) {
     return alert("Invalid file path");
   }
   const targetPath = Utils.getTargetPath(filepath, videoid);
-  console.log(targetPath);
-  cmd.run(`mkdir -p "${targetPath}"`);
+  Utils.createPathSync(targetPath);
+  // cmd.run(`mkdir -p "${targetPath}"`);
 
-  const FFMpeg = require("./src/FFMpeg");
-  cmd.get(FFMpeg.getThumbnailCmd(time, filepath, videoid), function(
+  const FFBento4 = require("./src/FFBento4");
+  cmd.get(FFBento4.getThumbnailCmd(time, filepath, videoid), function(
     err,
     data,
     stderr
@@ -200,5 +200,17 @@ function getPoster(callback) {
       const targetFile = Utils.getTargetPng(filepath, videoid);
       if (callback) callback(targetFile);
     }
+  });
+}
+
+function generateplaylist(bentoCmd) {
+  processRef = cmd.get(bentoCmd);
+  //listen to the python terminal output
+  processRef.stdout.on("data", function(data) {
+    console.log(data);
+  });
+
+  processRef.stderr.on("data", function(data) {
+    console.log(data);
   });
 }
