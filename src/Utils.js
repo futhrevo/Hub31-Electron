@@ -105,6 +105,7 @@ const clearDirectory = function(directory) {
 
 const getFilesCount = function(directory) {
   const fs = require("fs");
+  const { exts } = require("./Constants");
   let count = 0;
   if (fs.existsSync(directory)) {
     // check if file exists
@@ -112,7 +113,7 @@ const getFilesCount = function(directory) {
 
     if (files) {
       for (const file of files) {
-        if ([".ts", ".m3u8"].indexOf(path.extname(file)) > -1) {
+        if (exts.indexOf(path.extname(file)) > -1) {
           count++;
         } else {
           const curPath = path.join(directory, file);

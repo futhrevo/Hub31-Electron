@@ -1,4 +1,5 @@
 module.exports = {
+  exts: [".ts", ".m3u8"],
   rooturl: "https://hub31.com/sentry.key",
   apikey: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   videobucket: "hubacca",

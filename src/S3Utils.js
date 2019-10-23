@@ -2,13 +2,14 @@
 const S3 = require("aws-sdk/clients/s3");
 const fs = require("fs");
 const path = require("path");
+const Constants = require("./Constants");
 
 function walkSync(currentDirPath, callback) {
   fs.readdirSync(currentDirPath).forEach(function(name) {
     const filePath = path.join(currentDirPath, name);
     const stat = fs.statSync(filePath);
     if (stat.isFile()) {
-      if ([".ts", ".m3u8"].indexOf(path.extname(name)) > -1) {
+      if (Constants.exts.indexOf(path.extname(name)) > -1) {
         callback(filePath, stat);
       }
     } else if (stat.isDirectory()) {
