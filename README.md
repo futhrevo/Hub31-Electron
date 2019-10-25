@@ -32,3 +32,9 @@ Zm8xbHNUa2NFNUZ3em0rV1RhNTc2c0hRSXRoZzJ5M3gwdVZaektkZg==
 // https://gist.github.com/mikoim/27e4e0dc64e384adbcb91ff10a2d3678
 ffmpeg -hide_banner -y -v "quiet" -progress pipe:1 -i "inputloc" \
 -c:a aac -ar 48000 -c:v libx264 -preset slow -profile:v high -crf 20 -movflags +faststart -pix_fmt yuv420p -sc_threshold 0 -g 60 -keyint_min 60 -bf 2
+
+// https://github.com/realeyes-media/demo-encoder
+// https://slhck.info/video/2017/03/01/rate-control.html
+// http://streamingmedia.brightcovegallery.com/category/videos/trending-videos-from-streaming-media-east-2019
+// https://streaminglearningcenter.com/blog
+// https://demo.unified-streaming.com/features/#!/hls

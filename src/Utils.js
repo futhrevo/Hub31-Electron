@@ -145,7 +145,7 @@ const createPathSync = function(filepath) {
   const fs = require("fs");
   const targetpath = path.join(filepath, "export");
   if (!fs.existsSync(targetpath)) {
-    fs.mkdirSync(targetpath);
+    fs.mkdirSync(targetpath, { recursive: true });
   }
 };
 const getKeyUrl = function() {
