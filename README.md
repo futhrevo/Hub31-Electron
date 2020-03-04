@@ -38,3 +38,93 @@ ffmpeg -hide_banner -y -v "quiet" -progress pipe:1 -i "inputloc" \
 // http://streamingmedia.brightcovegallery.com/category/videos/trending-videos-from-streaming-media-east-2019
 // https://streaminglearningcenter.com/blog
 // https://demo.unified-streaming.com/features/#!/hls
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::hub31vids",
+            "Condition": {
+                "StringLike": {
+                    "s3:prefix": [
+                        "${aws:username}/*",
+                        "${aws:username}"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::hub31-pub",
+            "Condition": {
+                "StringEquals": {
+                    "s3:prefix": [
+                        "",
+                        "poster/"
+                    ],
+                    "s3:delimiter": "/"
+                }
+            }
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::hub31-pub",
+            "Condition": {
+                "StringLike": {
+                    "s3:prefix": [
+                        "poster/${aws:username}/*",
+                        "poster/${aws:username}"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "VisualEditor3",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObjectAcl",
+                "s3:GetObject",
+                "s3:RestoreObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::hub31vids/${aws:username}/*"
+        },
+        {
+            "Sid": "VisualEditor4",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObjectAcl",
+                "s3:GetObject",
+                "s3:RestoreObject",
+                "s3:ListBucket",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::hub31-pub/poster/${aws:username}/*"
+        },
+        {
+            "Sid": "VisualEditor5",
+            "Effect": "Allow",
+            "Action": "s3:HeadBucket",
+            "Resource": "arn:aws:s3:::hub31vids/${aws:username}/*"
+        },
+        {
+            "Sid": "VisualEditor6",
+            "Effect": "Allow",
+            "Action": "s3:HeadBucket",
+            "Resource": "arn:aws:s3:::hub31-pub/poster/${aws:username}/*"
+        }
+    ]
+}
+
+a9e5d2ef-0881-4f4b-a497-7d0ae127fd02
+AccessKeyId QUtJQVFEVzdKUVdWQkxKRU0yVFY=
+SAK amFqVzViNU5icmhHZzRvOHZCSE9xTFUyVGhxODlaRjFzMHhSUXJaZg==

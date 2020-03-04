@@ -2,8 +2,8 @@ module.exports = {
   exts: [".ts", ".m3u8"],
   rooturl: "https://hub31.com/sentry.key",
   apikey: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  videobucket: "hubacca",
-  posterbucket: "hub31.com",
+  videobucket: "hub31vids",
+  posterbucket: "hub31-pub",
   misc_params: '-hide_banner -y -v "quiet" -progress pipe:1',
   segment_target_duration: 4, // try to create a new segment every X seconds
   max_bitrate_ratio: 1.07, // maximum accepted bitrate fluctuations

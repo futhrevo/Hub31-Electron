@@ -5,7 +5,7 @@ const path = require("path");
 const Constants = require("./Constants");
 
 function walkSync(currentDirPath, callback) {
-  fs.readdirSync(currentDirPath).forEach(function(name) {
+  fs.readdirSync(currentDirPath).forEach(function (name) {
     const filePath = path.join(currentDirPath, name);
     const stat = fs.statSync(filePath);
     if (stat.isFile()) {
@@ -19,7 +19,7 @@ function walkSync(currentDirPath, callback) {
 }
 
 // https://aws.amazon.com/blogs/security/writing-iam-policies-grant-access-to-user-specific-folders-in-an-amazon-s3-bucket/
-module.exports.uploadDir = async function(
+module.exports.uploadDir = async function (
   s3Path,
   videobucket,
   posterbucket,
@@ -49,15 +49,15 @@ module.exports.uploadDir = async function(
   };
   await emptyS3Directory(s3, listParams);
   setStatus("Uploading...", max, 0);
-  uploadPoster(s3, posterbucket, s3Path, user, video);
-  walkSync(s3Path, function(filePath, stat) {
+  // uploadPoster(s3, posterbucket, s3Path, user, video);
+  walkSync(s3Path, function (filePath, stat) {
     let bucketPath = `${prefix}/${filePath.substring(s3Path.length + 1)}`;
     let params = {
       Bucket: videobucket,
       Key: bucketPath,
       Body: fs.readFileSync(filePath)
     };
-    s3.putObject(params, function(err, data) {
+    s3.putObject(params, function (err, data) {
       if (err) {
         errors++;
         console.log(err.message);
@@ -109,7 +109,7 @@ function uploadPoster(s3, bucketName, filepath, user, video) {
       Key: bucketPath,
       Body: fileData
     };
-    s3.putObject(params, function(err, data) {
+    s3.putObject(params, function (err, data) {
       if (err) {
         console.log(err);
       } else {
