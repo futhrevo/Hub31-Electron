@@ -49,7 +49,7 @@ module.exports.uploadDir = async function (
   };
   await emptyS3Directory(s3, listParams);
   setStatus("Uploading...", max, 0);
-  // uploadPoster(s3, posterbucket, s3Path, user, video);
+  uploadPoster(s3, posterbucket, s3Path, user, video);
   walkSync(s3Path, function (filePath, stat) {
     let bucketPath = `${prefix}/${filePath.substring(s3Path.length + 1)}`;
     let params = {
